@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy 26th</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blush-1: #f7dbe1;
+    --blush-2: #f0bfc9;
+    --rose: #c97b84;
+    --burgundy: #6b2b3a;
+    --cream: #fdf3ea;
+    --gold: #d9a441;
+    --paper: #fbeee0;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background: radial-gradient(ellipse at 50% 20%, var(--blush-1), var(--blush-2) 60%, #e9aab8 100%);
+    font-family: 'Quicksand', sans-serif;
+  }
+
+  .stage{
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  /* ambient floating hearts in background */
+  .ambient-heart{
+    position:absolute;
+    bottom:-40px;
+    font-size: 22px;
+    color: rgba(255,255,255,0.55);
+    animation: floatUp linear infinite;
+    pointer-events:none;
+    user-select:none;
+  }
+  @keyframes floatUp{
+    0%{ transform: translateY(0) translateX(0) rotate(0deg); opacity:0; }
+    10%{ opacity: 0.8; }
+    90%{ opacity: 0.6; }
+    100%{ transform: translateY(-110vh) translateX(20px) rotate(25deg); opacity:0; }
+  }
+
+  /* ===== Envelope ===== */
+  .envelope-wrap{
+    position:relative;
+    width: 300px;
+    height: 200px;
+    cursor:pointer;
+    transform-style: preserve-3d;
+    transition: transform 0.8s ease-in, opacity 0.8s ease-in;
+    z-index: 5;
+  }
+  .envelope-wrap.hidden{
+    transform: scale(0.4) translateY(-40px);
+    opacity: 0;
+    pointer-events:none;
+  }
+
+  .env-back{
+    position:absolute;
+    inset:0;
+    background: linear-gradient(160deg, var(--paper), #f4dfc8);
+    border-radius: 6px;
+    box-shadow: 0 20px 40px rgba(107,43,58,0.25);
+  }
+
+  .env-pocket-left, .env-pocket-right{
+    position:absolute;
+    top:0;
+    width:0; height:0;
+    border-style: solid;
+    z-index:2;
+  }
+  .env-pocket-left{
+    left:0;
+    border-width: 100px 0 100px 150px;
+    border-color: transparent transparent transparent #f3d9c4;
+    filter: brightness(0.97);
+  }
+  .env-pocket-right{
+    right:0;
+    border-width: 100px 150px 100px 0;
+    border-color: transparent #f3d9c4 transparent transparent;
+    filter: brightness(0.97);
+  }
+
+  .env-front-bottom{
+    position:absolute;
+    left:0; bottom:0;
+    width:0; height:0;
+    border-style: solid;
+    border-width: 90px 150px 0 150px;
+    border-color: #f8e6d3 transparent transparent transparent;
+    z-index:3;
+  }
+
+  .env-flap{
+    position:absolute;
+    top:0; left:0;
+    width:0; height:0;
+    border-style: solid;
+    border-width: 100px 150px 0 150px;
+    border-color: var(--rose) transparent transparent transparent;
+    transform-origin: top center;
+    transition: transform 1s cubic-bezier(.6,-0.2,.4,1.3);
+    z-index: 6;
+  }
+  .envelope-wrap.open .env-flap{
+    transform: rotateX(180deg);
+  }
+
+  .seal{
+    position:absolute;
+    top: 76px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 46px;
+    height: 44px;
+    z-index: 10;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+  }
+  .envelope-wrap.open .seal{
+    opacity: 0;
+    transform: translateX(-50%) scale(1.3);
+  }
+  .seal svg{ width:100%; height:100%; filter: drop-shadow(0 3px 4px rgba(107,43,58,0.4)); }
+
+  .hint{
+    position:absolute;
+    bottom: -46px;
+    left:0; right:0;
+    text-align:center;
+    color: var(--burgundy);
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    opacity: 0.75;
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ opacity:0.45; transform: translateY(0); }
+    50%{ opacity:0.9; transform: translateY(3px); }
+  }
+
+  /* ===== Couple scene ===== */
+  .scene{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    pointer-events:none;
+  }
+
+  .figure{
+    position:absolute;
+    top: 50%;
+    width: 160px;
+    height: 220px;
+    transform: translateY(-58%);
+    opacity: 0;
+  }
+  .figure.girl{
+    left: 50%;
+    margin-left: -172px;
+  }
+  .figure.boy{
+    left: 50%;
+    margin-left: 12px;
+  }
+
+  .stage.playing .figure.girl{
+    animation: slideInLeft 1.1s 0.15s cubic-bezier(.2,.7,.3,1) forwards;
+  }
+  .stage.playing .figure.boy{
+    animation: slideInRight 1.1s 0.15s cubic-bezier(.2,.7,.3,1) forwards;
+  }
+
+  @keyframes slideInLeft{
+    0%{ transform: translate(-120vw, -58%) rotate(-6deg); opacity:0; }
+    70%{ transform: translate(0, -58%) rotate(4deg); opacity:1; }
+    85%{ transform: translate(6px, -58%) rotate(-2deg); }
+    100%{ transform: translate(0, -58%) rotate(0deg); opacity:1; }
+  }
+  @keyframes slideInRight{
+    0%{ transform: translate(120vw, -58%) rotate(6deg); opacity:0; }
+    70%{ transform: translate(0, -58%) rotate(-4deg); opacity:1; }
+    85%{ transform: translate(-6px, -58%) rotate(2deg); }
+    100%{ transform: translate(0, -58%) rotate(0deg); opacity:1; }
+  }
+
+  .kiss-heart{
+    position:absolute;
+    top: 34%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    font-size: 30px;
+    z-index: 20;
+    pointer-events:none;
+  }
+  .stage.playing .kiss-heart{
+    animation: popHeart 1.4s 1.2s ease-out forwards;
+  }
+  .kiss-heart.h2{ font-size: 20px; }
+  .stage.playing .kiss-heart.h2{
+    animation: popHeart2 1.6s 1.4s ease-out forwards;
+  }
+  .kiss-heart.h3{ font-size: 16px; }
+  .stage.playing .kiss-heart.h3{
+    animation: popHeart3 1.7s 1.55s ease-out forwards;
+  }
+
+  @keyframes popHeart{
+    0%{ transform: translate(-50%,-50%) scale(0); opacity:0; }
+    30%{ transform: translate(-50%,-90%) scale(1.15); opacity:1; }
+    60%{ transform: translate(-50%,-120%) scale(1); opacity:1; }
+    100%{ transform: translate(-70%,-190%) scale(0.8); opacity:0; }
+  }
+  @keyframes popHeart2{
+    0%{ transform: translate(-50%,-50%) scale(0); opacity:0; }
+    30%{ transform: translate(-30%,-95%) scale(1); opacity:1; }
+    100%{ transform: translate(-10%,-200%) scale(0.7); opacity:0; }
+  }
+  @keyframes popHeart3{
+    0%{ transform: translate(-50%,-50%) scale(0); opacity:0; }
+    30%{ transform: translate(-65%,-85%) scale(0.9); opacity:1; }
+    100%{ transform: translate(-90%,-180%) scale(0.6); opacity:0; }
+  }
+
+  .caption{
+    position:absolute;
+    bottom: 9%;
+    left:0; right:0;
+    text-align:center;
+    opacity:0;
+    transform: translateY(24px);
+  }
+  .stage.playing .caption{
+    animation: captionIn 1s 1.9s ease-out forwards;
+  }
+  @keyframes captionIn{
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  .caption h1{
+    font-family: 'Dancing Script', cursive;
+    font-size: 64px;
+    color: var(--burgundy);
+    margin: 0;
+    text-shadow: 0 3px 10px rgba(107,43,58,0.2);
+  }
+  .caption p{
+    margin: 4px 0 0;
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--rose);
+    font-weight: 600;
+  }
+
+  @media (max-width: 480px){
+    .envelope-wrap{ width: 240px; height: 160px; }
+    .env-pocket-left{ border-width: 80px 0 80px 120px; }
+    .env-pocket-right{ border-width: 80px 120px 80px 0; }
+    .env-front-bottom{ border-width: 72px 120px 0 120px; }
+    .env-flap{ border-width: 80px 120px 0 120px; }
+    .seal{ top: 60px; width: 38px; height: 36px; }
+    .figure{ width: 120px; height: 165px; }
+    .figure.girl{ margin-left: -128px; }
+    .figure.boy{ margin-left: 8px; }
+    .caption h1{ font-size: 46px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+
+  <!-- ambient hearts -->
+  <div id="ambient"></div>
+
+  <!-- Envelope -->
+  <div class="envelope-wrap" id="envelope">
+    <div class="env-back"></div>
+    <div class="env-pocket-left"></div>
+    <div class="env-pocket-right"></div>
+    <div class="env-front-bottom"></div>
+    <div class="env-flap"></div>
+    <div class="seal" id="seal">
+      <svg viewBox="0 0 100 90">
+        <path d="M50 82 C 20 60, 5 40, 5 24 C 5 8, 25 2, 38 14 C 44 20, 50 28, 50 28 C 50 28, 56 20, 62 14 C 75 2, 95 8, 95 24 C 95 40, 80 60, 50 82 Z"
+              fill="#8f3346" stroke="#6b2b3a" stroke-width="2"/>
+      </svg>
+    </div>
+    <div class="hint">tap to open</div>
+  </div>
+
+  <!-- Couple scene -->
+  <div class="scene" id="scene">
+    <div class="figure girl">
+      <svg viewBox="0 0 160 220" xmlns="http://www.w3.org/2000/svg">
+        <!-- hair drawn first so the body sits in front of it -->
+        <g transform="translate(80,70) rotate(8)">
+          <path d="M-40 100 L-40 -18 Q -40 -46 0 -46 Q 40 -46 40 -18 L40 100 Q 0 150 -40 100 Z" fill="#241b1a"/>
+        </g>
+        <!-- body/red top -->
+        <path d="M40 220 C 30 150, 45 120, 80 118 C 115 120, 130 150, 120 220 Z" fill="#b23a4a"/>
+        <path d="M60 128 C 68 140, 92 140, 100 128 L 96 150 C 88 156, 72 156, 64 150 Z" fill="#c65464"/>
+        <!-- far arm resting on her hip -->
+        <path d="M46 135 Q 22 145 24 178" stroke="#b23a4a" stroke-width="16" fill="none" stroke-linecap="round"/>
+        <!-- near arm reaching toward the kiss -->
+        <path d="M112 140 Q 145 145 150 170" stroke="#b23a4a" stroke-width="16" fill="none" stroke-linecap="round"/>
+        <!-- thin gold necklace -->
+        <path d="M66 130 Q 80 145 94 130" stroke="#d9a441" stroke-width="2" fill="none"/>
+        <!-- neck -->
+        <rect x="70" y="95" width="20" height="26" fill="#f3d3bd"/>
+        <!-- head tilted toward center (right) -->
+        <g transform="translate(80,70) rotate(8)">
+          <!-- face -->
+          <circle cx="0" cy="0" r="38" fill="#f6d6bf"/>
+          <!-- side part accent line -->
+          <path d="M-6 -40 Q 4 -30 16 -22" stroke="#2c211f" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <!-- eyebrows -->
+          <path d="M-30 -10 Q -20 -15 -10 -10" stroke="#2c211f" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M10 -10 Q 20 -15 30 -10" stroke="#2c211f" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <!-- closed happy eyes -->
+          <path d="M-28 4 Q -19 -2 -10 4" stroke="#2c1f22" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <path d="M10 4 Q 19 -2 28 4" stroke="#2c1f22" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <!-- blush -->
+          <circle cx="-19" cy="17" r="6" fill="#e8909a" opacity="0.5"/>
+          <circle cx="19" cy="17" r="6" fill="#e8909a" opacity="0.5"/>
+          <!-- simple smile line, no red mouth -->
+          <path d="M-8 18 Q 0 22 8 18" stroke="#8a5a52" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="figure boy">
+      <svg viewBox="0 0 160 220" xmlns="http://www.w3.org/2000/svg">
+        <!-- body/pink tee -->
+        <path d="M40 220 C 32 155, 45 122, 80 120 C 115 122, 128 155, 120 220 Z" fill="#f0c9c6"/>
+        <path d="M65 130 L80 148 L95 130 Z" fill="#e3b4b1"/>
+        <!-- far arm resting on his hip -->
+        <path d="M114 135 Q 138 145 136 178" stroke="#f0c9c6" stroke-width="16" fill="none" stroke-linecap="round"/>
+        <!-- near arm reaching toward the kiss -->
+        <path d="M48 140 Q 15 145 10 170" stroke="#f0c9c6" stroke-width="16" fill="none" stroke-linecap="round"/>
+        <!-- thin necklace chain -->
+        <path d="M70 132 Q 80 145 90 132" stroke="#d9a441" stroke-width="2" fill="none"/>
+        <!-- neck -->
+        <rect x="70" y="95" width="20" height="26" fill="#e9b58c"/>
+        <!-- head tilted toward center (left) -->
+        <g transform="translate(80,70) rotate(-8)">
+          <circle cx="0" cy="0" r="42" fill="#eebb8e"/>
+          <!-- curly hair made of simple rounded lobes -->
+          <circle cx="-32" cy="-24" r="14" fill="#3d2a20"/>
+          <circle cx="-12" cy="-33" r="15" fill="#3d2a20"/>
+          <circle cx="12" cy="-33" r="15" fill="#3d2a20"/>
+          <circle cx="32" cy="-24" r="14" fill="#3d2a20"/>
+          <circle cx="-40" cy="-8" r="10" fill="#3d2a20"/>
+          <circle cx="40" cy="-8" r="10" fill="#3d2a20"/>
+          <circle cx="0" cy="-38" r="14" fill="#3d2a20"/>
+          <!-- eyebrows -->
+          <path d="M-34 -10 Q -22 -16 -10 -10" stroke="#3d2a20" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M10 -10 Q 22 -16 34 -10" stroke="#3d2a20" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <!-- closed happy eyes -->
+          <path d="M-32 4 Q -22 -3 -12 4" stroke="#5a3320" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <path d="M12 4 Q 22 -3 32 4" stroke="#5a3320" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <!-- beard, kept below the smile line -->
+          <ellipse cx="0" cy="30" rx="30" ry="16" fill="#3d2a20"/>
+          <!-- blush -->
+          <circle cx="-22" cy="18" r="7" fill="#e98a6b" opacity="0.4"/>
+          <circle cx="22" cy="18" r="7" fill="#e98a6b" opacity="0.4"/>
+          <!-- simple smile line, no red mouth -->
+          <path d="M-8 18 Q 0 22 8 18" stroke="#f0c9c6" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="kiss-heart">💗</div>
+    <div class="kiss-heart h2">💕</div>
+    <div class="kiss-heart h3">💞</div>
+
+    <div class="caption">
+      <h1>Happy 26th</h1>
+      <p>To many more together</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const stage = document.getElementById('stage');
+  const envelope = document.getElementById('envelope');
+
+  envelope.addEventListener('click', openEnvelope);
+
+  let opened = false;
+  function openEnvelope(){
+    if(opened) return;
+    opened = true;
+    envelope.classList.add('open');
+    envelope.querySelector('.hint').style.opacity = 0;
+
+    setTimeout(() => {
+      envelope.classList.add('hidden');
+    }, 550);
+
+    setTimeout(() => {
+      stage.classList.add('playing');
+    }, 900);
+  }
+
+  // ambient background hearts
+  const ambient = document.getElementById('ambient');
+  const heartChars = ['♡','❤','💕'];
+  for(let i=0; i<14; i++){
+    const el = document.createElement('div');
+    el.className = 'ambient-heart';
+    el.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
+    el.style.left = Math.random()*100 + 'vw';
+    el.style.fontSize = (14 + Math.random()*16) + 'px';
+    el.style.animationDuration = (8 + Math.random()*10) + 's';
+    el.style.animationDelay = (Math.random()*10) + 's';
+    ambient.appendChild(el);
+  }
+</script>
+
+</body>
+</html>
